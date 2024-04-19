@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width , initial-scale=1.0">
+    <title>Storify</title>
+    <link rel="stylesheet" href="style.css">
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+
+    <script>
+        // Function to handle the display of song recommendations
+        function displaySongs(songs) {
+            const songsContainer = document.getElementById('songs-container');
+            songsContainer.innerHTML = ''; // Clear previous results
+
+            songs.forEach(song => {
+                const songElement = document.createElement('p');
+                songElement.textContent = `Artist: ${song.artist}, Track: ${song.track_name}, Valence: ${song.valence}`;
+                songsContainer.appendChild(songElement);
+            });
+        }
+
+        document.querySelector('.generate-btn').addEventListener('click', function() {
+            var imageFile = document.querySelector('.image-file-input').files[0];
+            var formData = new FormData();
+            formData.append('imageFile', imageFile);
+
+            fetch('/predict-emotion', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display songs instead of alert
+                displaySongs(data.songs);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</head>
+<body>
+    <div class="bg">
+        <img src="images/icon.png" class="icon">
+    </div>
+    <div class="glass">
+        <div class="content">
+            <h1>Let the Music Mirror Your Mood!</h1>
+            <p>How would you like us to tailor your music experience today?</p>
+            <div class="options">
+                <label>
+                    <input type="radio" name="musicChoice" value="emotions">
+                    Tune into my Emotions
+                </label>
+                <label>
+                    <input type="radio" name="musicChoice" value="actions">
+                    Tune into my Actions
+                </label>
+            </div>
+            <!-- Language Selection -->
+            <p></p>
+            <p>Choose your preferred language for the song recommendations:</p>
+            <select name="languageChoice" class="language-dropdown">
+                <option value="english">English</option>
+                <option value="hindi">Hindi</option>
+                <option value="tamil">Tamil</option>
+            </select>
+
+            <!-- File Upload -->
+            <p>Upload your image:</p>
+            <input type="file" name="imageFile" class="image-file-input">
+            <button type="button" class="generate-btn">Generate</button>
+        </div>
+    </div>
+    <script>
+        document.querySelector('.generate-btn').addEventListener('click', function() {
+            var imageFile = document.querySelector('.image-file-input').files[0];
+            var formData = new FormData();
+            formData.append('imageFile', imageFile);
+
+            fetch('/predict-emotion', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Predicted Emotion: ' + data.emotion);
+                // You can also update the DOM with the predicted emotion here
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
